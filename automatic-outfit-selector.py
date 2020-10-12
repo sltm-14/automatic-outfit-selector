@@ -5,9 +5,8 @@ from PIL import Image, ImageTk  # To work with images
 
 WINDOW_TITLE = "My Wardrobe"
 
-WINDOW_WIDTH  = 500
-WINDOW_HEIGHT = 220
-
+WINDOW_WIDTH  = 220
+WINDOW_HEIGHT = 500
 IMG_WIDTH  = 250
 IMG_HEIGHT = 250
 
@@ -16,23 +15,42 @@ ALL_TOPS = [str('tops/') + imagefile for imagefile in os.listdir('tops/') if not
 
 class WardrobeApp:
     def __init__(self,root):
-        self.root = root                         # Root will be a tkinter object
+        # Root will be a tkinter object
+        self.root = root
 
-        self.top_images = ALL_TOPS               # Show top image in the window
+        # Show top image in the window
+        self.top_images = ALL_TOPS
 
-        self.top_image_path = self.top_images[0]  # Save single top
+        # Save single top
+        self.top_image_path = self.top_images[0]
 
-        self.tops_frame = tk.Frame(self.root)    # Create and add top image into Frame (first image to be displayed)
-        self.top_image_label = self.create_photo(self.top_image_path,self.tops_frame) # to pack this image into the tops frame and the pack the tops frame into the root
-        self.top_image_label.pack(side=tk.TOP) # add it to pack
+        # Create and add top image into Frame (first image to be displayed)
+        self.tops_frame = tk.Frame(self.root)
+        self.top_image_label = self.create_photo(self.top_image_path,self.tops_frame)
 
-        self.tops_frame.pack(fill=tk.BOTH,expand=tk.YES)
+        # add it to pack
+        self.top_image_label.pack(side=tk.TOP)
 
-        self.create_background() # Create background
+        # Create background
+        self.create_background()
 
     def create_background(self):
-        self.root.title(WINDOW_TITLE) # Add title to window
+        # Add title to window
+        self.root.title(WINDOW_TITLE)
         self.root.geometry('{0}x{1}'.format(WINDOW_WIDTH, WINDOW_HEIGHT)) #size of window
+
+        #add all buttons
+        self.create_buttons()
+
+        # add clothing
+        self.tops_frame.pack(fill=tk.BOTH,expand=tk.YES)
+
+    def create_buttons(self):
+        top_prev_button = tk.Button(self.tops_frame,text="Prev")
+        top_prev_button.pack(side=tk.LEFT)
+
+        top_next_button = tk.Button(self.tops_frame,text="Next")
+        top_next_button.pack(side=tk.LEFT)
 
     def create_photo(self,image_path,frame):
         image_file = Image.open(image_path)
@@ -42,7 +60,7 @@ class WardrobeApp:
         #weird tkinter quirk
         image_label.image = tk_photo
 
-        #we can add later
+        # we can add later
         return image_label
         #7:19
 

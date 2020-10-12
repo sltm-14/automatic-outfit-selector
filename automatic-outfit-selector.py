@@ -52,6 +52,30 @@ class WardrobeApp:
         top_next_button = tk.Button(self.tops_frame,text="Next")
         top_next_button.pack(side=tk.LEFT)
 
+    def get_next_item(self,current_item,category,increment = True):
+
+        # If we know where the current item index is in a category, then we find the pic before/after it
+        item_index = category.index(current_item)
+        final_index = len(category)-1
+        next_index = 0
+
+        #consider the edge cases
+        if increment nd item_index == final_index
+            #add the end and need to up,cycle up to beggining
+            next index = 0
+        elif not increment and item_ndex == 0
+            #cycle back to expand
+            next_index = final_index
+        else:
+            #regular up and down
+            #based on nincrement
+            increment = 1 if increment else -1
+            next_index = item_index + increment
+
+        next_image = category(next_index)
+
+        # Reset and updated image based on next_image path
+
     def create_photo(self,image_path,frame):
         image_file = Image.open(image_path)
         image_resized = image_file.resize((IMG_WIDTH, IMG_HEIGHT), Image.ANTIALIAS)

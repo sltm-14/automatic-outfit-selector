@@ -1,35 +1,42 @@
 import os
+import random
+
 import tkinter as tk              # To create the GUI
-from PIL import Image, ImageTk  # To work with images
-#from playsound import playsound # To play with oudio
+from PIL import Image, ImageTk    # To work with images
 
 WINDOW_TITLE = "My Wardrobe"
 
 WINDOW_WIDTH  = 220
-WINDOW_HEIGHT = 500
+WINDOW_HEIGHT = 550
 IMG_WIDTH     = 250
 IMG_HEIGHT    = 250
 
 # Store all the tops into a file we can access and skip hidden files
-ALL_TOPS = [str('tops/') + imagefile for imagefile in os.listdir('tops/') if not imagefile.startswith('.')]
+ALL_TOPS    = [str('tops/') + imagefile for imagefile in os.listdir('tops/') if not imagefile.startswith('.')]
+ALL_BOTTOMS = [str('bottoms/') + imagefile for imagefile in os.listdir('bottoms/') if not imagefile.startswith('.')]
 
 class WardrobeApp:
     def __init__(self,root):
         # Root will be a tkinter object
         self.root = root
 
-        # Show top image in the window
+        # Show top and bottoms image in the window
         self.top_images = ALL_TOPS
+        self.bottom_images = ALL_BOTTOMS
 
         # Save single top
-        self.top_image_path = self.top_images[1]
+        self.top_image_path = self.top_images[0]
+        self.bottom_image_path = self.bottom_images[0]
 
         # Create and add top image into Frame (first image to be displayed)
         self.tops_frame = tk.Frame(self.root)
         self.top_image_label = self.create_photo(self.top_image_path,self.tops_frame)
+        self.bottom_frame = tk.Frame(self.root)
+        self.bottom_image_label = self.create_photo(self.bottom_image_path,self.bottom_frame)
 
         # add it to pack
         self.top_image_label.pack(side=tk.TOP)
+        self.bottom_image_label.pack(side=tk.TOP)
 
         # Create background
         self.create_background()
@@ -44,6 +51,7 @@ class WardrobeApp:
 
         # add clothing
         self.tops_frame.pack(fill=tk.BOTH,expand=tk.YES)
+        self.bottom_frame.pack(fill=tk.BOTH,expand=tk.YES)
 
     def create_buttons(self):
         top_prev_button = tk.Button(self.tops_frame,text="Prev", command = self.get_next_top)
@@ -51,6 +59,23 @@ class WardrobeApp:
 
         top_next_button = tk.Button(self.tops_frame,text="Next", command = self.get_prev_top)
         top_next_button.pack(side=tk.LEFT)
+
+        bottom_prev_button = tk.Button(self.bottom_frame,text="Prev", command = self.get_next_bottom)
+        bottom_prev_button.pack(side=tk.LEFT)
+
+        bottom_next_button = tk.Button(self.bottom_frame,text="Next", command = self.get_prev_bottom)
+        bottom_next_button.pack(side=tk.LEFT)
+
+        create_outfit_button = tk.Button(self.tops_frame, text="Create Outfit", command=self.create_outfit)
+        create_outfit_button.pack(side=tk.RIGHT)
+
+    def update_photo(self, new_image, image_label):
+        new_image_file = Image.open(new_image)
+        image = new_image_file.resize((IMG_WIDTH, IMG_HEIGHT), Image.ANTIALIAS)
+        photo = ImageTk.PhotoImage(image)
+        image_label.configure(image=photo)
+        image_label.image = photo
+
 
     def _get_next_item(self,current_item,category,increment = True):
 
@@ -77,9 +102,13 @@ class WardrobeApp:
         # Reset and updated image based on next_image path
         if current_item in self.top_images:
             image_label = self.top_image_label
+            self.top_image_path = next_image
+        else:
+            image_label = self.bottom_image_label
+            self.bottom_image_path = next_image
 
         #Use update function to change the images
-        self.update_image(next_image,image_label)
+        self.update_photo(next_image,image_label)
 
     def get_next_top(self):
         self._get_next_item(self.top_image_path, self.top_images)
@@ -87,17 +116,11 @@ class WardrobeApp:
     def get_prev_top(self):
         self._get_next_item(self.top_image_path, self.top_images, increment=False)
 
-    def update_image(self,new_image_path,image_label):
-        #collect and change image into tk photo obj
-        image_file = Image.open(new_image_path)
-        image_resized = image_file.resize((IMG_WIDTH, IMG_HEIGHT), Image.ANTIALIAS)
-        tk_photo = ImageTk.PhotoImage(image_resized)
+    def get_next_bottom(self):
+        self._get_next_item(self.bottom_image_path, self.bottom_images)
 
-        #Update based on provided image Label
-        image_label.configure(image = tk_photo)
-
-        #weird tkinter.image = tk_photo
-        image_label.image = tk_photo
+    def get_prev_bottom(self):
+        self._get_next_item(self.bottom_image_path, self.bottom_images, increment=False)
 
     def create_photo(self,image_path,frame):
         image_file = Image.open(image_path)
@@ -109,7 +132,15 @@ class WardrobeApp:
 
         # we can add later
         return image_label
-        #7:19
+
+    def create_outfit(self):
+        # randomly select an outfit
+        new_top_index = random.randint(0, len(self.top_images)-1)
+        new_bottom_index = random.randint(0, len(self.bottom_images)-1)
+
+        # add the clothes onto the screen
+        self.update_photo(self.top_images[new_top_index], self.top_image_label)
+        self.update_photo(self.bottom_images[new_bottom_index], self.bottom_image_label)
 
 root = tk.Tk()
 app = WardrobeApp(root)
